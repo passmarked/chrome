@@ -152,8 +152,6 @@ function getReportedInfo(domain, fn) {
 
 		} else {
 
-			// run a actual query against server
-
 			// open a XHR for the request
 			var xhr = new XMLHttpRequest();
 
@@ -165,35 +163,50 @@ function getReportedInfo(domain, fn) {
 
 			].join('&'), false);
 
+			// handle the response
+			xhr.onreadystatechange = function() {
+
+				console.log(xhr.readyState);
+				console.dir(xhr);
+
+				// handle when done
+				if (xhr.readyState == 4) {
+
+					// get our response
+					var result = xhr.responseText;
+
+					console.log(result);
+
+					// can we parse it ?
+					var jsonObj = null;
+
+					// try to parse it
+					try { jsonObj = JSON.parse(result); } catch(err) {}
+
+					// could we parse ?
+					if(jsonObj) {
+
+						// save the url
+						setCache(domain, jsonObj, function(){
+
+							// return with info
+							fn(jsonObj);
+
+						});
+
+					} else {
+
+						// nope ...
+						fn(null);
+
+					}
+
+				}
+
+			};
+
 			// send the request
 			xhr.send();
-
-			// get our response
-			var result = xhr.responseText;
-
-			// can we parse it ?
-			var jsonObj = null;
-
-			// try to parse it
-			try { jsonObj = JSON.parse(result); } catch(err) {}
-
-			// could we parse ?
-			if(jsonObj) {
-
-				// save the url
-				setCache(domain, jsonObj, function(){
-
-					// return with info
-					fn(jsonObj);
-
-				});
-
-			} else {
-
-				// nope ...
-				fn(null);
-
-			}
 
 		}
 
@@ -433,7 +446,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 	getReportedInfo(domain, function(result){
 
 		// did we find a item for the page ?
-		if( result ) {
+		if( result && result.count > 0 ) {
 
 			// render the actual score we have
 			showScoreIcon(tabId, result.score);

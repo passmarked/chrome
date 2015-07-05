@@ -33,6 +33,8 @@
    "permissions" : [
         "declarativeContent",
         "tabs",
-        "storage"
+        "storage",
+        "https://api.passmarked.com/",
+        "http://api.passmarked.com/"
     ]
 }
