@@ -166,9 +166,6 @@ function getReportedInfo(domain, fn) {
 			// handle the response
 			xhr.onreadystatechange = function() {
 
-				console.log(xhr.readyState);
-				console.dir(xhr);
-
 				// handle when done
 				if (xhr.readyState == 4) {
 
