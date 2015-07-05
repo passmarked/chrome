@@ -20,8 +20,6 @@ var CONSTANTS = {
 **/
 function installNotice() {
 
-	chrome.storage.sync.get(null, function (data) { console.info(data) });
-
 	// check if not already set ...
 	chrome.storage.sync.get(CONSTANTS.INSTALL_KEY, function(result) {
 
@@ -44,7 +42,8 @@ function installNotice() {
 		    // set as a note
 		    chrome.storage.sync.set(params, function() {
 
-		    	chrome.storage.sync.get(null, function (data) { console.info(data) });
+		    	// -- ENABLE TO VIEW THE CONTENT OF THE SYNC DATA STORAGE OBJECT
+				// chrome.storage.sync.get(null, function (data) { console.info(data) });
 
 		    	// open our welcome page with meta data
 			    chrome.tabs.create({
@@ -411,44 +410,11 @@ chrome.pageAction.onClicked.addListener(function(tab){
 
 		}, function() {
 
-			// cool open
-			console.log('tab created');
+			// cool open, will add here if anything is needed ...
 
 		});
-
-		/*
-		// inject our css
-		chrome.tabs.insertCSS(tab.id, { file: 'page/style.css' }, function(){
-
-			// update
-			chrome.tabs.executeScript(tab.id, { file: 'page/script.js' }, function(){
-
-				// we're done here ...
-
-
-			});
-
-		});
-		*/
 
 	} );
-
-	// open up to our website
-	/* chrome.tabs.create({
-
-		url: 'http://passmarked.com/view?' + [
-
-			'url=' + encodeURIComponent(url),
-			'source=chrome.ext'
-
-		].join('&')
-
-	}, function() {
-
-		// cool open
-		console.log('tab created');
-
-	}); */
 
 });
 
