@@ -1,4 +1,4 @@
-# Passmarked Chrome Extension
+# Passmarked Chrome Extension (In Development)
 
 The Passmarked Chrome extension anonymously queries the Passmarked API while the user vitits their favourite sites. 
 
