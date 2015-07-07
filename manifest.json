@@ -30,6 +30,10 @@
         "persistent": false
    },
 
+    "externally_connectable": {
+      "matches": ["*://*.passmarked.com/*", "*://passmarked.com/*"]
+    },
+
    "permissions" : [
         "declarativeContent",
         "tabs",

@@ -10,7 +10,21 @@ var CONSTANTS = {
 
 	},
 	CACHE: 60,
-	INSTALL_KEY: 'install'
+	INSTALL_KEY: 'install',
+	STYLE: {
+
+		CANVAS: [
+
+			'image-rendering: optimizeSpeed',
+			'image-rendering: -moz-crisp-edges',
+			'image-rendering: -webkit-optimize-contrast',
+			'image-rendering: optimize-contrast',
+			'image-rendering: pixelated',
+			'-ms-interpolation-mode: nearest-neighbor'
+
+		].join(';')
+
+	}
 
 };
 
@@ -172,8 +186,6 @@ function getReportedInfo(domain, fn) {
 					// get our response
 					var result = xhr.responseText;
 
-					console.log(result);
-
 					// can we parse it ?
 					var jsonObj = null;
 
@@ -218,6 +230,11 @@ function showBlankIcon(tabId) {
 
 	// create a local canvas element
 	var canvas = document.createElement('canvas');
+
+	// set the style
+	canvas.style = CONSTANTS.STYLE.CANVAS;
+
+	// get the context
 	var context = canvas.getContext('2d');
 
 	// fill in the background with white
@@ -268,6 +285,11 @@ function showScoreIcon(tabId, score) {
 
 	// create a local canvas element
 	var canvas = document.createElement('canvas');
+
+	// set the style
+	canvas.style = CONSTANTS.STYLE.CANVAS;
+
+	// get the context
 	var context = canvas.getContext('2d');
 
 	// fill in the background with white
@@ -405,13 +427,13 @@ chrome.pageAction.onClicked.addListener(function(tab){
 	// get the domain
 	var hostname = getDomainByUrl(url);
 
-	// get all the data
-	getReportedInfo( hostname, function(report_overview_obj){
+	// check if not the password result website
+	if(url.indexOf('passmarked.com') != -1 && url.replace('http:').split('/').length > 4) {
 
-		// did we find one ?
+		// do not allow the result pages to be checked ..
 		chrome.tabs.create({
 
-			url: CONSTANTS.URL.API + '/redirect?' + [
+			url: CONSTANTS.URL.WEB + '/dawg?' + [
 
 				'url=' + encodeURIComponent(url),
 				'source=chrome.ext'
@@ -424,7 +446,30 @@ chrome.pageAction.onClicked.addListener(function(tab){
 
 		});
 
-	} );
+	} else {
+
+		// get all the data
+		getReportedInfo( hostname, function(report_overview_obj){
+
+			// did we find one ?
+			chrome.tabs.create({
+
+				url: CONSTANTS.URL.API + '/redirect?' + [
+
+					'url=' + encodeURIComponent(url),
+					'source=chrome.ext'
+
+				].join('&')
+
+			}, function() {
+
+				// cool open, will add here if anything is needed ...
+
+			});
+
+		} );
+
+	}
 
 });
 
@@ -458,6 +503,48 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 	});
 	
 });
+
+/**
+* Listens for commands from our website
+**/
+chrome.runtime.onMessage.addListener(
+
+	function(request, sender, sendResponse) {
+
+		// is this from a website ?
+		if(sender.tab) {
+
+			if(request.command == 'installed') {
+
+				// get the install time
+				chrome.storage.sync.get([ CONSTANTS.INSTALL_KEY ], function(result) {
+
+					// remove from storage
+					sendResponse({ status: "ok", timestamp: result[CONSTANTS.INSTALL_KEY] });
+
+				});
+
+			} else if(request.command == 'bust') {
+
+				// the timestamp key
+				var timestamp_key = request.key + '.timestamp';
+
+				// remove it
+				chrome.storage.local.remove([ request.key, timestamp_key ], function() {
+
+					// signal done and that nothing was found from cache ...
+					// remove from storage
+					sendResponse({ status: "ok"});
+
+				});
+
+			}
+
+		}
+
+	}
+
+);
 
 // run our install notice
 installNotice();
