@@ -15,12 +15,7 @@ var CONSTANTS = {
 
 		CANVAS: [
 
-			'image-rendering: optimizeSpeed',
-			'image-rendering: -moz-crisp-edges',
-			'image-rendering: -webkit-optimize-contrast',
-			'image-rendering: optimize-contrast',
-			'image-rendering: pixelated',
-			'-ms-interpolation-mode: nearest-neighbor'
+			'cursor: pointer'
 
 		].join(';')
 
@@ -228,43 +223,23 @@ function getReportedInfo(domain, fn) {
 **/
 function showBlankIcon(tabId) {
 
-	// create a local canvas element
-	var canvas = document.createElement('canvas');
+	// set the icon
+	chrome.pageAction.setIcon({
 
-	// set the style
-	canvas.style = CONSTANTS.STYLE.CANVAS;
+		tabId: tabId,
+		path: {
 
-	// get the context
-	var context = canvas.getContext('2d');
+			38: 'faces/face.png',
+			19: 'faces/face.png'
 
-	// fill in the background with white
-	context.fillStyle = 'white';
-	context.fill();
+		}
 
-	// handle a new image to draw
-	drawing = new Image();
-
-	// wait for the image to load first
-	drawing.onload = function () {
-
-		// draws our image after it's been loaded
-		context.drawImage(drawing,0,4);
-
-		// set the icon we want to use
-		chrome.pageAction.setIcon({
-
-			imageData: context.getImageData(0, 0, 19, 19),
-			tabId: tabId
-
-		});
+	}, function(){
 
 		// show the page action to the tab this is active on
-	    chrome.pageAction.show(tabId);
+    	chrome.pageAction.show(tabId);
 
-	};
-
-	// update the source of the image with local assets
-	drawing.src = "assets/bg19.png";
+	});
 
 }
 
@@ -281,52 +256,30 @@ function showScoreIcon(tabId, score) {
 		showBlankIcon(tabId);
 		return;
 
-	}	
+	}
 
-	// create a local canvas element
-	var canvas = document.createElement('canvas');
+	// pad the score
+	var paddedScore = '' + Math.floor(score).toString();
+	if(paddedScore.length == 1)
+		paddedScore = '0' + paddedScore;
 
-	// set the style
-	canvas.style = CONSTANTS.STYLE.CANVAS;
+	// set the icon
+	chrome.pageAction.setIcon({
 
-	// get the context
-	var context = canvas.getContext('2d');
+		tabId: tabId, 
+		path: {
 
-	// fill in the background with white
-	context.fillStyle = 'white';
-	context.fill();
+			38: 'faces/' + paddedScore + '.png',
+			19: 'faces/' + paddedScore + '.png'
 
-	// draw the score out
-	context.fillStyle = colorByScore(score);
-	context.textAlign = "center";
-	context.textBaseline = "middle";
-	context.font = "11px Arial";
-	context.fillText(score, 19 * 0.5,  (19 * 0.5)-2 );
+		}
 
-	// handle a new image to draw
-	drawing = new Image();
-
-	// wait for the image to load first
-	drawing.onload = function () {
-
-		// draws our image after it's been loaded
-		context.drawImage(drawing,0,11);
-
-		// set the icon we want to use
-		chrome.pageAction.setIcon({
-
-			imageData: context.getImageData(0, 0, 19, 19),
-			tabId: tabId
-
-		});
+	}, function(){
 
 		// show the page action to the tab this is active on
-	    chrome.pageAction.show(tabId);
+    	chrome.pageAction.show(tabId);
 
-	};
-
-	// update the source of the image with local assets
-	drawing.src = "assets/bg.empty19.png";
+	});
 
 }
 

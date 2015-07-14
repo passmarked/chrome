@@ -17,8 +17,8 @@
     "page_action": {
       "default_title": "Passmarked",
       "default_icon": {
-        "19": "assets/icon19.png",
-        "38": "assets/icon38.png"
+        "19": "faces/face.png",
+        "38": "faces/face.png"
       }
     },
 
