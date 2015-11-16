@@ -165,7 +165,7 @@ function getReportedInfo(domain, fn) {
 			var xhr = new XMLHttpRequest();
 
 			// open up a connection
-			xhr.open("GET", CONSTANTS.URL.API + '/query?' + [
+			xhr.open("GET", CONSTANTS.URL.API + '/v1/query?' + [
 
 				'source=chrome.ext',
 				'domain=' + domain
@@ -407,7 +407,7 @@ chrome.pageAction.onClicked.addListener(function(tab){
 			// did we find one ?
 			chrome.tabs.create({
 
-				url: CONSTANTS.URL.API + '/redirect?' + [
+				url: CONSTANTS.URL.API + '/v1/redirect?' + [
 
 					'url=' + encodeURIComponent(url),
 					'source=chrome.ext'
